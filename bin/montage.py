@@ -1,3 +1,4 @@
+#!/opt/conda/bin/python
 """Montage images or masks"""
 import argparse
 from normalization import Normalize

@@ -5,29 +5,29 @@
  */
 // SHARED VARIABLES
 params.wells_toggle = 'include' // ['include', 'exclude']
-params.chosen_wells = 'all'  // 'A1,A2,A7', or 'A1-A6' or 'B07,G06' or 'A1' or 'all'
+params.chosen_wells = 'B03'  // 'A1,A2,A7', or 'A1-A6' or 'B07,G06' or 'A1' or 'all'
 
 params.timepoints_toggle = 'include' // ['include', 'exclude']
-params.chosen_timepoints = 'all'  // 'T0', 'T0-T7', or 'all'
+params.chosen_timepoints = 'T1'  // 'T0', 'T0-T7', or 'all'
 
 params.channels_toggle = 'include' // ['include', 'exclude']
 params.chosen_channels = ''  // 'RFP1', 'RFP1,GFP,DAPI', 'all'
 
-params.experiment = '20231002-1-MSN-taueos'  // Experiment name
-params.morphology_channel = 'GFP-DMD1'  // Your morphology channel
+params.experiment = 'AALS-Set31-09182023-GEDI-JAK'  // Experiment name
+params.morphology_channel = 'RFP'  // Your morphology channel
 params.analysis_version = 1  // Analysis version. Change if you're rerunning analysis and want to save previous iteration.
-params.img_norm_name = 'identity' // ['identity', 'subtraction', 'division']
+params.img_norm_name = 'subtraction' // ['identity', 'subtraction', 'division']
 
 // SELECT MODULES
 params.DO_REGISTER_EXPERIMENT = false
-params.DO_SEGMENTATION = false
+params.DO_SEGMENTATION = true
 params.DO_TRACKING = false
 params.DO_INTENSITY = false
 params.DO_CROP = false
 params.DO_MONTAGE = false
 params.DO_PLATEMONTAGE = false
 params.DO_CNN = false
-params.DO_GET_CSVS = true
+params.DO_GET_CSVS = false
 
 // Variables per module
 
@@ -405,14 +405,7 @@ process CNN {
 
     input:
     val ready
-    val exp    if (params.DO_MONTAGE) {
-        montage_ch = MONTAGE(track_result, experiment_ch, tiletype_ch, montage_pattern_ch, well_ch, tp_ch, chosen_channels_for_register_exp_ch,
-        well_toggle_ch, tp_toggle_ch, channel_toggle_ch)
-        montage_result = MONTAGE.out
-    }
-    else {
-        montage_result = true
-    }
+    val exp
     val optimizer
     val chosen_wells
     val chosen_timepoints
