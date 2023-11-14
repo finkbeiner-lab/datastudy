@@ -1,9 +1,8 @@
+#!/opt/conda/bin/python
+
 import argparse
 import os
-from glob import glob
-import numpy as np
 from cellpose import models
-from cellpose import plot
 from skimage import (
     color, feature, filters, measure, morphology, segmentation, util
 )
@@ -34,6 +33,7 @@ logger.warning('Running Segmentation from Database.')
 class CellposeSegmentation:
     def __init__(self, opt):
         self.opt = opt
+        self.opt.img_norm_name = 'identity'
         self.experiment = opt.experiment
         assert len(self.opt.chosen_channels) > 0, 'Channel must be selected'
         self.Norm = Normalize(self.opt)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         help='path to save pickle file',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.pkl'
     )
-    parser.add_argument('--experiment', default='20230126-MsNeuron-ADctrlEVS-sensorsMito', type=str)
+    parser.add_argument('--experiment', default='20230928-MsNeu-RGEDItau1', type=str)
     parser.add_argument('--batch_size',default=1, type=int)
     parser.add_argument('--cell_diameter', default=50, type=int)
     parser.add_argument('--flow_threshold', default=.4, type=float)
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     parser.add_argument("--channels_toggle", default='include',
                         help="Chose whether to include or exclude specified channels.")
     parser.add_argument("--chosen_wells", "-cw",
-                        dest="chosen_wells", default='H4',
+                        dest="chosen_wells", default='A1',
                         help="Specify wells to include or exclude")
     parser.add_argument("--chosen_timepoints", "-ct",
                         dest="chosen_timepoints", default='T0',
@@ -172,7 +172,7 @@ if __name__ == '__main__':
     parser.add_argument("--chosen_channels", "-cc", default='Confocal-GFP16',
                         dest="chosen_channels",
                         help="Specify channels to include or exclude.")
-    parser.add_argument('--tile', default=1, type=int, help="Select single tile to segment. Default is to segment all tiles.")
+    parser.add_argument('--tile', default=0, type=int, help="Select single tile to segment. Default is to segment all tiles.")
 
     args = parser.parse_args()
     print(args)
