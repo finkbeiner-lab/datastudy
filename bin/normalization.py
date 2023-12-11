@@ -125,7 +125,7 @@ class Normalize(Ops):
             img_lst = []
             filenames = df.loc[df.tile == i, 'filename'].tolist()
             random.seed(121)
-            if len(filenames):
+            if len(filenames)==1:
                 print('ONLY ONE FILE: TOO FEW FOR BACKGROUND SUBTRACTION/DIVISION')
             filenames = random.sample(filenames, min(20, len(filenames)))
             for f in filenames:
@@ -172,7 +172,7 @@ class Normalize(Ops):
             img_lst = []
             filenames = df.loc[df.tile == i, 'filename'].tolist()
             random.seed(121)
-            if len(filenames):
+            if len(filenames)==1:
                 print('ONLY ONE FILE: TOO FEW FOR BACKGROUND SUBTRACTION/DIVISION')
             filenames = random.sample(filenames, min(20, len(filenames)))
             for f in filenames:
@@ -188,7 +188,7 @@ class Normalize(Ops):
             img_lst = []
             filenames = df.loc[df.tile == i, 'filename'].tolist()
             random.seed(121)
-            if len(filenames):
+            if len(filenames)==1:
                 print('ONLY ONE FILE: TOO FEW FOR BACKGROUND SUBTRACTION/DIVISION')
             filenames = random.sample(filenames, min(20, len(filenames)))
             for f in filenames:
