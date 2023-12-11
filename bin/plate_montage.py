@@ -86,12 +86,12 @@ if __name__ == '__main__':
         help='Text status',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.txt'
     )
-    parser.add_argument('--experiment', default='20230928-MsNeu-RGEDItau1', type=str)
+    parser.add_argument('--experiment', default='112023-TH-GEDI-DSMs', type=str)
     parser.add_argument('--img_size',default=200, type=int, help='Side length of well montage.')
-    parser.add_argument('--norm_intensity', default=2000, type=int, help='Value to normalize: (img / norm) * 255.')
+    parser.add_argument('--norm_intensity', default=10000, type=int, help='Value to normalize: (img / norm) * 255.')
     parser.add_argument('--tiletype', default='filename', choices=['filename', 'maskpath', 'trackedmaskpath'], type=str,
                         help='Montage image, binary mask, or tracked mask.')
-    parser.add_argument('--img_norm_name', default='identity', choices=['division', 'subtraction', 'identity'], type=str,
+    parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity'], type=str,
                         help='Image normalization method using flatfield image.')
     parser.add_argument('--montage_pattern', default='standard', choices=['standard', 'legacy'], help="Montage snaking with 3 2 1 4 5 6 9 8 7 pattern.")
     parser.add_argument("--wells_toggle", default='include', 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
                         dest="chosen_wells", default='all',
                         help="Specify wells to include or exclude")
     parser.add_argument("--chosen_timepoints", "-ct",
-                        dest="chosen_timepoints", default='T0',
+                        dest="chosen_timepoints", default='all',
                         help="Specify timepoints to include or exclude.")
     parser.add_argument("--chosen_channels", "-cc",
                         dest="chosen_channels", default='all',
