@@ -17,6 +17,7 @@ class Normalize(Ops):
         super().__init__(opt)
         self.flatfields = {}
         self.backgrounds = {}
+        self.well_backgrounds = {}
         # self.image_correction = dict(division=self.division_flatfield,
         #                              subtraction=self.subtract_flatfield,
         #                              identity=self.identity,
@@ -151,6 +152,34 @@ class Normalize(Ops):
         else:
             self.collect_images(df, well, timepoint)
         return
+    
+    def get_background_image_by_tile(self, df, well, timepoint):
+        if well in self.backgrounds and timepoint in self.backgrounds[well]:
+            return
+        else:
+            self.collect_images(df, well, timepoint)
+        return
+    
+    def get_background_image_v2(self, df, well, timepoint, tile):
+        if tile is None:
+            self.get_background_image_by_tile(df, well, timepoint)
+        elif timepoint is None:
+            self.get_background_image()
+            
+    def collect_images_v2(self, df, well, timepoint, tile):
+        strt = time()
+        print('Collecting images for background subtraction')
+        img_lst = []
+        filenames = df.filename.tolist()
+        for f in filenames:
+            img = imageio.v3.imread(f)
+            img_lst.append(img)
+        bg = np.median(img_lst, axis=0)
+        bg[bg < 1] = 1
+        if well not in self.backgrounds:
+            self.backgrounds[well] = {}
+        self.backgrounds[well][timepoint] = bg
+        print(f'Calculated background image for {well} at T{timepoint} in {time() - strt}')
 
     def collect_images(self, df, well, timepoint):
         strt = time()
