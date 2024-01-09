@@ -31,10 +31,10 @@ class Normalize(Ops):
         savedir = os.path.join(analysisdir, 'NormalizedImages')
         if not os.path.exists(savedir):
             os.makedirs(savedir)
-        tiledata_df = self.get_tiledata_df()
+        tiledata_df = self.get_df_for_training(['channeldata'])
         tiledata_df.rename(columns={'id': 'tiledata_id'}, inplace=True)
-        g = tiledata_df.groupby(['well', 'timepoint'])
-        for (well, timepoint), df in g:
+        g = tiledata_df.groupby(['well', 'timepoint', 'channel'])
+        for (well, timepoint, channel), df in g:
             self.get_background_image(df, well, timepoint)
             
             for i, row in df.iterrows():
@@ -44,6 +44,7 @@ class Normalize(Ops):
                 img = np.uint16(self.image_bg_correction[self.opt.img_norm_name](img, well, timepoint))
                 normpath = self.save_norm(img, row.filename, savedir, well)
                 print('normpath', normpath)
+            del self.backgrounds[well][timepoint]
 
     def to_eight_bit(self, target):
         return np.uint8(target / np.max(target) * 255)
@@ -216,7 +217,7 @@ if __name__ == '__main__':
         help='Tiff image of last tile',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.tif'
     )
-    parser.add_argument('--experiment', default='JAK-COR7508012023-GEDI', type=str)
+    parser.add_argument('--experiment', default='20231207-2-MsN-minisog', type=str)
     parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity', 'rollingball'], type=str,
                         help='Image normalization method using flatfield image.')
     parser.add_argument("--wells_toggle", default='include',
@@ -226,10 +227,10 @@ if __name__ == '__main__':
     parser.add_argument("--channels_toggle", default='include',
                         help="Chose whether to include or exclude specified channels.")
     parser.add_argument("--chosen_wells", "-cw", 
-                        dest="chosen_wells", default='B03',
+                        dest="chosen_wells", default='B4',
                         help="Specify wells to include or exclude")
     parser.add_argument("--chosen_timepoints", "-ct",
-                        dest="chosen_timepoints", default='T1',
+                        dest="chosen_timepoints", default='T0',
                         help="Specify timepoints to include or exclude.")
     parser.add_argument("--chosen_channels", "-cc", default='all',
                         dest="chosen_channels",

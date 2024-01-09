@@ -192,6 +192,7 @@ process INTENSITY {
     val chosen_timepoints
     val wells_toggle
     val timepoints_toggle
+    val save_background_image
 
     output:
     val true
@@ -201,7 +202,8 @@ process INTENSITY {
     intensity.py --experiment ${exp} --img_norm_name ${img_norm_name}  \
     --morphology_channel ${morphology_channel} --target_channel ${target_channel} \
     --chosen_wells ${chosen_wells} --chosen_timepoints ${chosen_timepoints} \
-    --wells_toggle ${wells_toggle} --timepoints_toggle ${timepoints_toggle}
+    --wells_toggle ${wells_toggle} --timepoints_toggle ${timepoints_toggle} \
+    --save_background_image ${save_background_image}
     """
 }
 

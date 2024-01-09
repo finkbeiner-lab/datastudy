@@ -31,6 +31,10 @@ class Intensity:
         self.opt = opt
         self.Norm = Normalize(self.opt)
         self.Op = Ops(self.opt)
+        _, analysisdir = self.Norm.get_raw_and_analysis_dir()
+        self.norm_dir = os.path.join(analysisdir, 'NormalizedImages')
+
+        
         
 
     def run(self):
@@ -52,6 +56,8 @@ class Intensity:
                 print(f'{well} T{timepoint} has null maskpath. Skipping. Check morphology channel.')
                 continue
             self.Norm.get_background_image(tdf, well, timepoint)  # get background image for well and timepoint based on target channel
+            if self.opt.save_background_image:
+                self.Norm.save_norm(self.Norm.background[well][timepoint], row.filename, self.norm_dir, well)
             welldata_id = df.welldata_id.iloc[0]  # get uuid for welldata
             target_channel_uuid = Db.get_table_uuid('channeldata', dict(channel=self.opt.target_channel, welldata_id=welldata_id))  # get target channel uuid
 
@@ -149,6 +155,7 @@ if __name__ == '__main__':
     parser.add_argument("--target_channel", default='Cy5',
                         dest="target_channel",
                         help="Get intensity of this channel.")
+    parser.add_argument('--save_background_image', default=0, choices=[0,1], type=int, help="If 1 save background images (like running normalization.py), is 0, don't save.")
     parser.add_argument('--tile', default=0, type=int, help="Select single tile to segment. Default is to segment all tiles.")
     args = parser.parse_args()
     print(args)

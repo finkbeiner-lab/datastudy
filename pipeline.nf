@@ -141,6 +141,7 @@ tiletype_ch = Channel.of(params.tiletype)
 montage_pattern_ch = Channel.of(params.montage_pattern)
 well_size_for_platemontage_ch = Channel.of(params.well_size_for_platemontage)
 norm_intensity_ch = Channel.of(params.norm_intensity)
+save_background_image_ch = Channel.of(params.save_background_image)
 
 model_type_ch = Channel.of(params.model_type)
 batch_size_cellpose_ch = Channel.of(params.batch_size_cellpose)
@@ -276,7 +277,7 @@ workflow {
     }
     if (params.DO_INTENSITY) {
         intensity_flag = seg_result.mix(cellpose_result).mix(track_result).collect()
-        int_ch = INTENSITY(intensity_flag, experiment_ch, norm_ch, morphology_ch, target_channel_ch, well_ch, tp_ch, well_toggle_ch, tp_toggle_ch)
+        int_ch = INTENSITY(intensity_flag, experiment_ch, norm_ch, morphology_ch, target_channel_ch, well_ch, tp_ch, well_toggle_ch, tp_toggle_ch, save_background_image_ch)
         intensity_result = INTENSITY.out
         int_ch.view { it }
     }
