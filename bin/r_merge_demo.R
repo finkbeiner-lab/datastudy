@@ -1,6 +1,6 @@
 library(dplyr)
 
-folder = "/gladstone/finkbeiner/linsley/TM_analysis/GXYTMP-20231207-2-MsN-minisog/CSVS"
+folder = "/gladstone/finkbeiner/linsley/TM_analysis/GXYTMP-20231207-2-MsN-lentieos/CSVS"
 
 
 experimentdata = read.csv(file.path(folder, "experimentdata.csv"))

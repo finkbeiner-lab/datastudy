@@ -3,6 +3,7 @@
 """Normalization file. Divide or subtract by flatfield image. Get flatfield by median of N images."""
 import numpy as np
 from db_util import Ops
+from sql import Database
 import random
 import imageio
 import os
@@ -25,6 +26,81 @@ class Normalize(Ops):
         self.image_bg_correction = dict(division=self.division_bg,
                                         subtraction=self.subtract_bg,
                                         identity=self.identity_bg)
+        
+        self.apply_bg_correction = dict(division=self.division_background,
+                                        subtraction=self.subtract_background,
+                                        identity=self.identity_background)
+        
+    def run(self, method:str):
+        """Get background image using either tiles, timepoints, or neighboring wells. Save background image. Put path in database."""
+        Db = Database()
+        # Get background image.
+        _, analysisdir = self.get_raw_and_analysis_dir()
+        savedir = os.path.join(analysisdir, f'NormalizedImages')
+        if not os.path.exists(savedir):
+            os.makedirs(savedir)
+        tiledata_df = self.get_df_for_training(['channeldata'])
+        tiledata_df.rename(columns={'id': 'tiledata_id'}, inplace=True)
+        # Background subtraction with other tiles in well
+        if method=='per_well':
+            g = tiledata_df.groupby(['well', 'timepoint', 'channel'])
+            for (well, timepoint, channel), df in g:
+                strt = time()
+                bg = self.collect_images_v2(df)
+
+                print(f'Calculated background image for {well} at T{timepoint} for {channel} in {time() - strt}')
+                # bg image applies to all images in grouped dataframe.
+                self.apply_bg_per_group(Db, savedir, df, bg)                
+        # Background subtraction along timepoints
+        
+        elif method=='tile_over_time':
+            g = tiledata_df.groupby(['well', 'tile', 'channel'])
+            for (well, tile, channel), df in g:
+                strt = time()
+                bg = self.collect_images_v2(df)
+
+                print(f'Calculated background image for {well} at tile {tile} for {channel} in {time() - strt}')
+                # bg image applies to all images in grouped dataframe.
+                self.apply_bg_per_group(Db, savedir, df, bg)
+        # Background subtraction using tiles from other wells in same position
+        elif method=='tile_over_wells':
+            g = tiledata_df.groupby(['tile', 'timepoint', 'channel'])
+            for (tile, timepoint, channel), df in g:
+                strt = time()
+                bg = self.collect_images_v2(df)
+
+                print(f'Calculated background image for {tile} at T{timepoint} for {channel} in {time() - strt}')
+                # bg image applies to all images in grouped dataframe.
+                self.apply_bg_per_group(Db, savedir, df, bg)  
+        # Background subtraction using tiles from other wells in random positions
+        elif method=='random':
+            g = tiledata_df.groupby(['timepoint', 'channel'])
+            for (timepoint, channel), df in g:
+                strt = time()
+                bg = self.collect_images_v2(df)
+                print(f'Calculated background image for T{timepoint} for {channel} in {time() - strt}')
+                # bg image applies to all images in grouped dataframe.
+                self.apply_bg_per_group(Db, savedir, df, bg)
+                
+                
+    def apply_bg_per_group(self, Db, savedir, df, bg):
+        for i, row in df.iterrows():
+            img = imageio.v3.imread(row.filename)
+            img = np.uint16(self.apply_bg_correction[self.opt.img_norm_name](img, bg))
+            normpath = self.save_norm(img, row.filename, savedir, row.well)
+            print('normpath', normpath)
+            Db.update(tablename='tiledata', update_dct=dict(backgroundpath=normpath), kwargs=dict(id=row.id))
+            
+    def collect_images_v2(self, df):
+        print('Collecting images for background subtraction')
+        img_lst = []
+        filenames = df.filename.tolist()
+        for f in filenames:
+            img = imageio.v3.imread(f)
+            img_lst.append(img)
+        bg = np.median(img_lst, axis=0)
+        bg[bg < 1] = 1
+        return bg
 
     def test(self):
         """Save background corrected images for viewing"""
@@ -85,6 +161,21 @@ class Normalize(Ops):
     def subtract_bg(self, img, well, timepoint):
         im = img - self.backgrounds[well][timepoint]
         print('background range', np.min(self.backgrounds[well][timepoint]), np.max(self.backgrounds[well][timepoint]))
+        print('im', np.min(im), np.max(im))
+        im[im < 0] = 0
+        return im
+    
+    def identity_background(self, img, bg):
+        return img
+
+    def division_background(self, img, bg):
+        im = img / bg
+        im = im / np.max(im) * 50000
+        return im
+
+    def subtract_background(self, img, bg):
+        im = img - bg
+        print('background range', np.min(bg), np.max(bg))
         print('im', np.min(im), np.max(im))
         im[im < 0] = 0
         return im
@@ -166,20 +257,6 @@ class Normalize(Ops):
         elif timepoint is None:
             self.get_background_image()
             
-    def collect_images_v2(self, df, well, timepoint, tile):
-        strt = time()
-        print('Collecting images for background subtraction')
-        img_lst = []
-        filenames = df.filename.tolist()
-        for f in filenames:
-            img = imageio.v3.imread(f)
-            img_lst.append(img)
-        bg = np.median(img_lst, axis=0)
-        bg[bg < 1] = 1
-        if well not in self.backgrounds:
-            self.backgrounds[well] = {}
-        self.backgrounds[well][timepoint] = bg
-        print(f'Calculated background image for {well} at T{timepoint} in {time() - strt}')
 
     def collect_images(self, df, well, timepoint):
         strt = time()
