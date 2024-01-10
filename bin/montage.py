@@ -58,7 +58,7 @@ class Montage:
         images = []
         savepath = None
         mont = None
-        overlap = 0  # TODO: use overlap?
+        overlap = 0  # TODO: use overlap
         logger.warning(f'Length of df: {len(df)} and max tile: {df.tile.max()}')
         print(f'Length of df: {len(df)} and max tile: {df.tile.max()}')
         df = df.sort_values('tile')
@@ -81,8 +81,8 @@ class Montage:
                     savepath = os.path.join(welldir, name)
                 img = imageio.v3.imread(f)
                 
-                cleaned_im = self.Norm.image_bg_correction[self.opt.img_norm_name](img, row.well, row.timepoint)
-                images.append(cleaned_im)
+                # cleaned_im = self.Norm.image_bg_correction[self.opt.img_norm_name](img, row.well, row.timepoint)
+                images.append(img)
             if well in self.Norm.backgrounds and timepoint in self.Norm.backgrounds[well]:
                 del self.Norm.backgrounds[well][timepoint]
         num_tiles = len(images)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.txt'
     )
     parser.add_argument('--experiment', default='JAK-COR7508012023-GEDI', type=str)
-    parser.add_argument('--tiletype', default='trackedmaskpath', choices=['filename', 'maskpath', 'trackedmaskpath'], type=str,
+    parser.add_argument('--tiletype', default='trackedmaskpath', choices=['filename', 'maskpath', 'trackedmaskpath', 'backgroundpath'], type=str,
                         help='Montage image, binary mask, or tracked mask.')
     parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity'], type=str,
                         help='Image normalization method using flatfield image.')

@@ -96,13 +96,17 @@ class Segmentation:
         df.sort_values(by='tile', inplace=True)
         img, thresh, regions, masks = None, None, None, None
         print(f'Thresholding well {well} at timepoint {timepoint}')
-        self.Norm.get_background_image(df, well, timepoint)
+        # self.Norm.get_background_image(df, well, timepoint)
         for i, row in df.iterrows():
             tile_strt = time()
             print('row', row)
-            img = imageio.imread(row.filename)  # TODO: is opencv faster/ more memory efficient?
+            if row.backgroundpath is None:
+                imgpath = row.filename
+            else:
+                imgpath = row.backgroundpath
+            img = imageio.imread(imgpath)  # TODO: is opencv faster/ more memory efficient?
 
-            smoothed_im = self.Norm.image_bg_correction[self.opt.img_norm_name](img, well, timepoint)
+            # smoothed_im = self.Norm.image_bg_correction[self.opt.img_norm_name](img, well, timepoint)
             smoothed_im = self.Norm.gaussian_filter(smoothed_im)
             if self.segmentation_method=='manual':
                 thresh = self.opt.manual_thresh

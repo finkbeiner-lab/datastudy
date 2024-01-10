@@ -19,7 +19,7 @@ colnames(celldata)[colnames(celldata) == "id"] = "celldata_id"
 colnames(channeldata)[colnames(channeldata) == "id"] = "channeldata_id"
 
 #channel_names <- c('GFP-DMD1', 'RFP1', 'Cy5', 'Brightfield', 'BLUE-DMD-blocked', 'DAPI-DMD')
-channel_names <- c('GFP-DMD1', 'RFP1', 'RFP2')
+channel_names <- c('GFP-DMD1', 'GFP-DMD2', 'RFP1', 'RFP2')
 channeldata <- filter(channeldata, channel %in% channel_names)
 glimpse(channeldata)
 

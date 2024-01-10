@@ -72,13 +72,28 @@ class Intensity:
                                                                           tile=int(row.tile),
                                                                           timepoint=int(timepoint)
                                                                           ))
-                # if filename is None: raise Exception(f'Filename for channel {self.opt.target_channel} is not found.')
+                if filename is None: raise Exception(f'Filename for channel {self.opt.target_channel} is not found.')
                 if filename is None: 
                     logger.warning(f'Filename for channel {self.opt.target_channel} is not found.')
                     continue
                 logger.info(f'filename {filename}')
-                img = imageio.v3.imread(filename[0][0])  # read target tile
-                img = self.Norm.image_bg_correction[self.opt.img_norm_name](img, well, timepoint)  # background correction
+                # img = imageio.v3.imread(filename[0][0])  # read target tile
+                # img = self.Norm.image_bg_correction[self.opt.img_norm_name](img, well, timepoint)  # background correction
+                
+                # Get background path of target channel tile
+                bgpath = Db.get_table_value('tiledata', column='backgroundpath',kwargs=dict(welldata_id=welldata_id,
+                                                                          channeldata_id=target_channel_uuid,
+                                                                          tile=int(row.tile),
+                                                                          timepoint=int(timepoint)
+                                                                          ))
+                
+                if bgpath is not None:
+                    imgpath = bgpath[0][0]
+                else:
+                    logger.info('Background subtracted image is None. Run Normalization.')
+                    imgpath = filename[0][0]
+                img = imageio.v3.imread(imgpath)  # read target tile
+                
                 # celldata df for this tile
                 celldata_df = Db.get_df_from_query('celldata', dict(tiledata_id=row.tiledata_id))
                 # Merge tiledata df for morphology with celldata (also for morphology)

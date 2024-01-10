@@ -19,10 +19,6 @@ class Normalize(Ops):
         self.flatfields = {}
         self.backgrounds = {}
         self.well_backgrounds = {}
-        # self.image_correction = dict(division=self.division_flatfield,
-        #                              subtraction=self.subtract_flatfield,
-        #                              identity=self.identity,
-        #                              rollingball=self.rolling_ball)
         self.image_bg_correction = dict(division=self.division_bg,
                                         subtraction=self.subtract_bg,
                                         identity=self.identity_bg)
@@ -31,7 +27,7 @@ class Normalize(Ops):
                                         subtraction=self.subtract_background,
                                         identity=self.identity_background)
         
-    def run(self, method:str):
+    def run(self):
         """Get background image using either tiles, timepoints, or neighboring wells. Save background image. Put path in database."""
         Db = Database()
         # Get background image.
@@ -42,7 +38,7 @@ class Normalize(Ops):
         tiledata_df = self.get_df_for_training(['channeldata'])
         tiledata_df.rename(columns={'id': 'tiledata_id'}, inplace=True)
         # Background subtraction with other tiles in well
-        if method=='per_well':
+        if self.opt.norm_method=='per_well':
             g = tiledata_df.groupby(['well', 'timepoint', 'channel'])
             for (well, timepoint, channel), df in g:
                 strt = time()
@@ -53,7 +49,7 @@ class Normalize(Ops):
                 self.apply_bg_per_group(Db, savedir, df, bg)                
         # Background subtraction along timepoints
         
-        elif method=='tile_over_time':
+        elif self.opt.norm_method=='tile_over_time':
             g = tiledata_df.groupby(['well', 'tile', 'channel'])
             for (well, tile, channel), df in g:
                 strt = time()
@@ -63,7 +59,7 @@ class Normalize(Ops):
                 # bg image applies to all images in grouped dataframe.
                 self.apply_bg_per_group(Db, savedir, df, bg)
         # Background subtraction using tiles from other wells in same position
-        elif method=='tile_over_wells':
+        elif self.opt.norm_method=='tile_over_wells':
             g = tiledata_df.groupby(['tile', 'timepoint', 'channel'])
             for (tile, timepoint, channel), df in g:
                 strt = time()
@@ -73,7 +69,7 @@ class Normalize(Ops):
                 # bg image applies to all images in grouped dataframe.
                 self.apply_bg_per_group(Db, savedir, df, bg)  
         # Background subtraction using tiles from other wells in random positions
-        elif method=='random':
+        elif self.opt.norm_method=='random':
             g = tiledata_df.groupby(['timepoint', 'channel'])
             for (timepoint, channel), df in g:
                 strt = time()
@@ -81,6 +77,7 @@ class Normalize(Ops):
                 print(f'Calculated background image for T{timepoint} for {channel} in {time() - strt}')
                 # bg image applies to all images in grouped dataframe.
                 self.apply_bg_per_group(Db, savedir, df, bg)
+        
                 
                 
     def apply_bg_per_group(self, Db, savedir, df, bg):
@@ -126,29 +123,6 @@ class Normalize(Ops):
     def to_eight_bit(self, target):
         return np.uint8(target / np.max(target) * 255)
 
-    # def identity(self, img, tile):
-    #     return img
-
-    # def division_flatfield(self, img, tile):
-    #     im = img / self.flatfields[tile]
-    #     im = im / np.max(im) * 50000
-    #     return im
-
-    # def rolling_ball(self, img, tile):
-    #     # img = np.uint16(self.gaussian_filter(img))
-    #     img = transform.rescale(img, 1 / 8, anti_aliasing=True)
-    #     background = restoration.rolling_ball(img, radius=100)
-
-    #     im = img - background
-    #     im = np.uint16(transform.rescale(im, 8,))
-    #     return im
-
-    # def subtract_flatfield(self, img, tile):
-    #     im = img - self.flatfields[tile]
-    #     print('flatfield', np.min(self.flatfields[tile]), np.max(self.flatfields[tile]))
-    #     print('im', np.min(im), np.max(im))
-    #     im[im < 0] = 0
-    #     return im
 
     def identity_bg(self, img, well, timepoint):
         return img
@@ -324,6 +298,7 @@ if __name__ == '__main__':
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.tif'
     )
     parser.add_argument('--experiment', default='20231207-2-MsN-minisog', type=str)
+    parser.add_argument('--norm_method', default='per_well', choices=[ 'per_well', 'tile_over_time', 'tile_over_wells'])
     parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity', 'rollingball'], type=str,
                         help='Image normalization method using flatfield image.')
     parser.add_argument("--wells_toggle", default='include',
@@ -345,4 +320,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
     Norm = Normalize(args)
-    Norm.test()
+    Norm.run()
