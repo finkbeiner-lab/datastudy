@@ -1,0 +1,1 @@
+docker run --privileged -m 20G -p 8080:80 -v ~/export:/export --mount type=bind,source=/Volumes/Finkbeiner-Robodata,target=/gladstone/finkbeiner/Finkbeiner-Robodata --mount type=bind,source=/Volumes/Finkbeiner-Steve,target=/gladstone/finkbeiner/Finkbeiner-Steve -ti dursunturan/dolphinnext-studio /bin/bash         
