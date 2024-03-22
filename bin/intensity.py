@@ -121,28 +121,28 @@ if __name__ == '__main__':
         help='Text status',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.txt'
     )
-    parser.add_argument('--experiment', default = '20231005-MS-10-minisog-IF', type=str)
+    parser.add_argument('--experiment', default = '112023-TH-GEDI-DSMs', type=str)
     parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity'], type=str,
                         help='Image normalization method using flatfield image.')
     parser.add_argument("--wells_toggle", default='include', 
                         help="Chose whether to include or exclude specified wells.")
     parser.add_argument("--timepoints_toggle", default='include',
                         help="Chose whether to include or exclude specified timepoints.")
-    parser.add_argument("--channels_toggle", default='include',
+    parser.add_argument("--channels_toggle", default='exclude',
                         help="Chose whether to include or exclude specified channels.")
     parser.add_argument("--chosen_wells", "-cw",
-                        dest="chosen_wells", default='A3',
+                        dest="chosen_wells", default='all',
                         help="Specify wells to include or exclude")
     parser.add_argument("--chosen_timepoints", "-ct", default='',
                         dest="chosen_timepoints", 
                         help="Specify timepoints to include or exclude.")
-    parser.add_argument("--chosen_channels", "-cc", default='',
+    parser.add_argument("--chosen_channels", "-cc", default='Confocal-GFP16',
                         dest="chosen_channels",
                         help="Filter channels, only for speed")
-    parser.add_argument("--morphology_channel", default='GFP-DMD1',
+    parser.add_argument("--morphology_channel", default='Epi-GFP16',
                     dest="morphology_channel",
                     help="Morphology Channel")
-    parser.add_argument("--target_channel", default='RFP1',
+    parser.add_argument("--target_channel", default='Epi-RFP16',
                         dest="target_channel",
                         help="Get intensity of this channel.")
     parser.add_argument('--tile', default=0, type=int, help="Select single tile to segment. Default is to segment all tiles.")

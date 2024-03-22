@@ -88,7 +88,7 @@ if __name__ == '__main__':
     )
     parser.add_argument('--experiment', default='112023-TH-GEDI-DSMs', type=str)
     parser.add_argument('--img_size',default=200, type=int, help='Side length of well montage.')
-    parser.add_argument('--norm_intensity', default=10000, type=int, help='Value to normalize: (img / norm) * 255.')
+    parser.add_argument('--norm_intensity', default=100000, type=int, help='Value to normalize: (img / norm) * 255.')
     parser.add_argument('--tiletype', default='filename', choices=['filename', 'maskpath', 'trackedmaskpath'], type=str,
                         help='Montage image, binary mask, or tracked mask.')
     parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity'], type=str,

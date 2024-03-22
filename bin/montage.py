@@ -114,7 +114,7 @@ if __name__ == '__main__':
         help='Text status',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.txt'
     )
-    parser.add_argument('--experiment', default='20230928-MsNeu-RGEDItau1', type=str)
+    parser.add_argument('--experiment', default='112023-TH-GEDI-DSMs', type=str)
     parser.add_argument('--tiletype', default='filename', choices=['filename', 'maskpath', 'trackedmaskpath'], type=str,
                         help='Montage image, binary mask, or tracked mask.')
     parser.add_argument('--img_norm_name', default='identity', choices=['division', 'subtraction', 'identity'], type=str,

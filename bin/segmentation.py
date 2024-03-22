@@ -196,7 +196,7 @@ if __name__ == '__main__':
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.tif'
     )
 
-    parser.add_argument('--experiment',default='0907-FB-1-JL-gedi-test', type=str)
+    parser.add_argument('--experiment',default='112023-TH-GEDI-DSMs', type=str)
 
     parser.add_argument('--segmentation_method', default='sd_from_mean', choices=['sd_from_mean', 'minimum', 'yen', 'local', 'li', 'isodata', 'mean',
                                                           'otsu', 'sauvola', 'triangle', 'manual', 'tryall'], type=str,
