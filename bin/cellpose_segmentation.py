@@ -53,7 +53,7 @@ class CellposeSegmentation:
         # model_type='cyto' or 'nuclei' or 'cyto2'
         Db = Database()
         logger.warning(f'running cellpose {self.opt.model_type}')
-        model = models.Cellpose(model_type=self.opt.model_type)
+        model = models.Cellpose(gpu=True, model_type=self.opt.model_type)
 
         # define CHANNELS to run segementation on
         # grayscale=0, R=1, G=2, B=3
@@ -82,12 +82,12 @@ class CellposeSegmentation:
             print('props_df', props_df)
 
             # Add to database
-            Db.update('tiledata', dict(maskpath=maskpath), kwargs=dict(experimentdata_id=row.experimentdata_id,
+            Db.update('tiledata', dict(maskpath=maskpath, segmentationmethod='cellpose'), kwargs=dict(experimentdata_id=row.experimentdata_id,
                                                                        welldata_id=row.welldata_id,
                                                                        channeldata_id=row.channeldata_id,
                                                                        tile=row.tile,
-                                                                       timepoint=row.timepoint,
-                                                                       segmentationmethod='cellpose'))
+                                                                       timepoint=row.timepoint
+                                                                       ))
             update_celldata_and_intensitycelldata(row, props_df, Db)
             logger.warning(f'Updated celldata and intensitycelldata for well {row.well} tile {row.tile}')
 

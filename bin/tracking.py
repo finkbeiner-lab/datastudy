@@ -368,7 +368,11 @@ if __name__ == '__main__':
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.pkl'
     )
     parser.add_argument(
+<<<<<<< HEAD
         '--experiment',default='112023-TH-GEDI-DSMs',
+=======
+        '--experiment',default='20231130-1-MsN-cry2tdp43-optocrisprgedi-update',
+>>>>>>> 97e8c0baccf0aa12323ae4a8aaf9570b4800caa4
         help='Plate name',
         # default='SB26-30plate1'  # AB-CS47iTDP-Survival LINCS062016A AB-SOD1-KW4-WTC11-Survival
         # default='KS-AB-iMN-TDP43-Survival'  # AB-CS47iTDP-Survival LINCS062016A LINCS092016B
@@ -413,12 +417,21 @@ if __name__ == '__main__':
     parser.add_argument("--channels_toggle", default='include',
                         help="Chose whether to include or exclude specified channels.")
     parser.add_argument("--chosen_wells", "-cw",
+<<<<<<< HEAD
                         dest="chosen_wells", default='all',
                         help="Specify wells to include or exclude")
     parser.add_argument("--chosen_timepoints", "-ct",
                         dest="chosen_timepoints", default='all',
                         help="Specify timepoints to include or exclude.")
     parser.add_argument("--chosen_channels", "-cc", default='Epi-GFP16',
+=======
+                        dest="chosen_wells", default='B2',
+                        help="Specify wells to include or exclude")
+    parser.add_argument("--chosen_timepoints", "-ct",
+                        dest="chosen_timepoints", default='T0,T1',
+                        help="Specify timepoints to include or exclude.")
+    parser.add_argument("--chosen_channels", "-cc", default='RFP1',
+>>>>>>> 97e8c0baccf0aa12323ae4a8aaf9570b4800caa4
                         dest="chosen_channels",
                         help="Morphology Channel.")
     parser.add_argument('--tile', default=0, type=int, help="Select single tile to segment. Default is to segment all tiles.")

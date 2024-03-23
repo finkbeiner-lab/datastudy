@@ -42,7 +42,11 @@ class Intensity:
         target_group = target_df.groupby(['well', 'timepoint'])
 
         for (well, timepoint), df in morph_group:
-            tdf = target_group.get_group((well, timepoint))  # get target df for well and timepoint
+            try:
+                tdf = target_group.get_group((well, timepoint))  # get target df for well and timepoint
+            except KeyError:
+                print(well, timepoint, 'not found')
+                continue
             logger.info(f'Getting intensity well {well} at timepoint {timepoint}')
             if df.maskpath.iloc[0] is None:
                 print(f'{well} T{timepoint} has null maskpath. Skipping. Check morphology channel.')
@@ -121,7 +125,11 @@ if __name__ == '__main__':
         help='Text status',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.txt'
     )
+<<<<<<< HEAD
     parser.add_argument('--experiment', default = '112023-TH-GEDI-DSMs', type=str)
+=======
+    parser.add_argument('--experiment', default = '20231109-1-MsN-cry2tdp43-updated', type=str)
+>>>>>>> 97e8c0baccf0aa12323ae4a8aaf9570b4800caa4
     parser.add_argument('--img_norm_name', default='subtraction', choices=['division', 'subtraction', 'identity'], type=str,
                         help='Image normalization method using flatfield image.')
     parser.add_argument("--wells_toggle", default='include', 
@@ -139,10 +147,17 @@ if __name__ == '__main__':
     parser.add_argument("--chosen_channels", "-cc", default='Confocal-GFP16',
                         dest="chosen_channels",
                         help="Filter channels, only for speed")
+<<<<<<< HEAD
     parser.add_argument("--morphology_channel", default='Epi-GFP16',
                     dest="morphology_channel",
                     help="Morphology Channel")
     parser.add_argument("--target_channel", default='Epi-RFP16',
+=======
+    parser.add_argument("--morphology_channel", default='RFP1',
+                    dest="morphology_channel",
+                    help="Morphology Channel")
+    parser.add_argument("--target_channel", default='Cy5',
+>>>>>>> 97e8c0baccf0aa12323ae4a8aaf9570b4800caa4
                         dest="target_channel",
                         help="Get intensity of this channel.")
     parser.add_argument('--tile', default=0, type=int, help="Select single tile to segment. Default is to segment all tiles.")
