@@ -2,18 +2,21 @@
 
 import argparse
 import os
-from cellpose import models
+
 from skimage import (
     color, feature, filters, measure, morphology, segmentation, util
 )
 from segmentation_helper import save_mask, update_celldata_and_intensitycelldata
 from normalization import Normalize
 import pandas as pd
-import imageio
+# import imageio
+import imageio.v2 as imageio
 from sql import Database
 from string import ascii_uppercase
 import logging
 import datetime
+from cellpose import models
+
 
 logger = logging.getLogger("CellposeSegmentation")
 # logger.propagate = False
@@ -53,7 +56,12 @@ class CellposeSegmentation:
         # model_type='cyto' or 'nuclei' or 'cyto2'
         Db = Database()
         logger.warning(f'running cellpose {self.opt.model_type}')
-        model = models.Cellpose(gpu=True, model_type=self.opt.model_type)
+        #model = models.Cellpose(gpu=True, model_type=self.opt.model_type)
+        model = models.CellposeModel(gpu=True, model_type=self.opt.model_type) 
+        
+        # TODO Initialize Cellpose model with GPU memory limit
+        #model = models.Cellpose(gpu=True, model_type=self.opt.model_type, torch_mem="6000MB")
+
 
         # define CHANNELS to run segementation on
         # grayscale=0, R=1, G=2, B=3
@@ -100,8 +108,12 @@ class CellposeSegmentation:
         return
 
     def cellpose_single_image(self, model, chan, img):
-        masks, flows, styles, diams = model.eval(img, batch_size=self.opt.batch_size, diameter=self.opt.cell_diameter, channels=chan,
+        #masks, flows, styles, diams = model.eval(img, batch_size=self.opt.batch_size, diameter=self.opt.cell_diameter, channels=chan,
+                                                 #flow_threshold=self.opt.flow_threshold, cellprob_threshold=self.opt.cell_probability)
+        #for other models, or a custom model
+        masks, flows, styles= model.eval(img, batch_size=self.opt.batch_size, diameter=self.opt.cell_diameter, channels=chan,
                                                  flow_threshold=self.opt.flow_threshold, cellprob_threshold=self.opt.cell_probability)
+        
         print('Labelled masks with cellpose.')
         props = measure.regionprops_table(masks, intensity_image=img,
                                           properties=('label', 'area', 'centroid_weighted',
@@ -151,12 +163,12 @@ if __name__ == '__main__':
         help='path to save pickle file',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.pkl'
     )
-    parser.add_argument('--experiment', default='20230928-MsNeu-RGEDItau1', type=str)
-    parser.add_argument('--batch_size',default=1, type=int)
-    parser.add_argument('--cell_diameter', default=50, type=int)
+    parser.add_argument('--experiment', default='20240315-SW-NSCLC-6well-AZD-Bf-transmissive', type=str)
+    parser.add_argument('--batch_size',default=32, type=int)
+    parser.add_argument('--cell_diameter', default=121, type=int)
     parser.add_argument('--flow_threshold', default=.4, type=float)
     parser.add_argument('--cell_probability',default=0.,  type=float)
-    parser.add_argument('--model_type',default='cyto2', type=str)
+    parser.add_argument('--model_type',default='CP_20241003_NSCLC', type=str)
     parser.add_argument("--wells_toggle", default='include',
                         help="Chose whether to include or exclude specified wells.")
     parser.add_argument("--timepoints_toggle", default='include',
@@ -164,12 +176,12 @@ if __name__ == '__main__':
     parser.add_argument("--channels_toggle", default='include',
                         help="Chose whether to include or exclude specified channels.")
     parser.add_argument("--chosen_wells", "-cw",
-                        dest="chosen_wells", default='A1',
+                        dest="chosen_wells", default='all',
                         help="Specify wells to include or exclude")
     parser.add_argument("--chosen_timepoints", "-ct",
-                        dest="chosen_timepoints", default='T0',
+                        dest="chosen_timepoints", default='T0-T5',
                         help="Specify timepoints to include or exclude.")
-    parser.add_argument("--chosen_channels", "-cc", default='Confocal-GFP16',
+    parser.add_argument("--chosen_channels", "-cc", default='Brightfield',
                         dest="chosen_channels",
                         help="Specify channels to include or exclude.")
     parser.add_argument('--tile', default=0, type=int, help="Select single tile to segment. Default is to segment all tiles.")

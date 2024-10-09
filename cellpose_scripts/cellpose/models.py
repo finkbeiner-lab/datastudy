@@ -16,8 +16,9 @@ _MODEL_DIR_ENV = os.environ.get("CELLPOSE_LOCAL_MODELS_PATH")
 _MODEL_DIR_DEFAULT = pathlib.Path.home().joinpath('.cellpose', 'models')
 MODEL_DIR = pathlib.Path(_MODEL_DIR_ENV) if _MODEL_DIR_ENV else _MODEL_DIR_DEFAULT
 
+
 MODEL_NAMES = ['cyto','nuclei','tissuenet','livecell', 'cyto2',
-                'CP', 'CPx', 'TN1', 'TN2', 'TN3', 'LC1', 'LC2', 'LC3', 'LC4']
+                'CP', 'CPx', 'TN1', 'TN2', 'TN3', 'LC1', 'LC2', 'LC3', 'LC4','CP_20240823_NSCLC']
 
 def model_path(model_type, model_index, use_torch=True):
     torch_str = 'torch'
