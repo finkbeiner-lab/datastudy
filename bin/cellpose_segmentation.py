@@ -163,12 +163,12 @@ if __name__ == '__main__':
         help='path to save pickle file',
         default=f'/gladstone/finkbeiner/linsley/josh/GALAXY/YD-Transdiff-XDP-Survival1-102822/GXYTMP/tmp_output.pkl'
     )
-    parser.add_argument('--experiment', default='20240315-SW-NSCLC-6well-AZD-Bf-transmissive', type=str)
+    parser.add_argument('--experiment', default='20240315-SW-NSCLC-6well-AZD-Bf-phase', type=str)
     parser.add_argument('--batch_size',default=32, type=int)
     parser.add_argument('--cell_diameter', default=121, type=int)
     parser.add_argument('--flow_threshold', default=.4, type=float)
     parser.add_argument('--cell_probability',default=0.,  type=float)
-    parser.add_argument('--model_type',default='CP_20241003_NSCLC', type=str)
+    parser.add_argument('--model_type',default='CP_20241003_phase', type=str)
     parser.add_argument("--wells_toggle", default='include',
                         help="Chose whether to include or exclude specified wells.")
     parser.add_argument("--timepoints_toggle", default='include',
