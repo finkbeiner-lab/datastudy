@@ -64,7 +64,7 @@ process SEGMENTATION {
     --img_norm_name ${img_norm_name}  --lower_area_thresh ${lower_area_thresh} --upper_area_thresh ${upper_area_thresh} \
     --sd_scale_factor ${sd_scale_factor} \
     --chosen_wells ${chosen_wells} --chosen_channels ${morphology_channel} --chosen_timepoints ${chosen_timepoints} \
-    --wells_toggle ${wells_toggle} --timepoints_toggle ${timepoints_toggle} --use_aligned_tiles ${use_aligned_tiles}
+    --wells_toggle ${wells_toggle} --timepoints_toggle ${timepoints_toggle} \ ${ use_aligned_tiles ? '--use_aligned_tiles' : '' }
     """
 }
 

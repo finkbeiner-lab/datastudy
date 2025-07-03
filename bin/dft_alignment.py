@@ -353,14 +353,14 @@ class dft_Alignment:
                             if os.path.exists(output_img_location):
                                 well = image_stack_experiment_well[0][3]
                                 experimentdata_id = self.Db.get_table_uuid('experimentdata', dict(experiment=self.opt.experiment))
-                                welldata_id = self.Db.get_table_uuid('welldata', dict(experimentdata_id=experimentdata_id, well=well))
+                                welldata_id = self.Db.get_table_uuid('tiledata', dict(experimentdata_id=experimentdata_id, well=well))
                                 if self.opt.tiletype == 'maskpath':
                                     print("mask path is updated!")
-                                    update_field = 'maskAligned'
+                                    update_field = 'alignedmontagemaskpath'
                                 else:
-                                    update_field = 'imageAligned'
+                                    update_field = 'alignedmontagepath'
                                 self.Db.update(
-                                    'welldata',
+                                    'tiledata',
                                     update_dct={update_field: output_img_location},  # Store montage image path in the correct column
                                     kwargs={'id': welldata_id}  # Ensure correct well ID
                                 )

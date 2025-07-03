@@ -138,6 +138,7 @@ well_toggle_ch = Channel.of(params.wells_toggle)
 tp_toggle_ch = Channel.of(params.timepoints_toggle)
 channel_toggle_ch = Channel.of(params.channels_toggle)
 image_overlap_ch = Channel.of(params.image_overlap) //austin added "_ch" 5/17
+use_aligned_tiles_ch = Channel.of(params.use_aligned_tiles)
 target_channel_ch = Channel.from(params.target_channel)
 target_channel_crop_ch = Channel.from(params.target_channel_crop)
 puncta_target_channel_ch = Channel.from(params.puncta_target_channel)
@@ -284,7 +285,7 @@ workflow {
     if (params.DO_SEGMENTATION) {
         register_flag = updatepaths_result.mix(register_result).collect()
         seg_ch = SEGMENTATION(register_flag, experiment_ch, morphology_ch, seg_ch, norm_ch, lower_ch, upper_ch, sd_ch,
-        well_ch, tp_ch, well_toggle_ch, tp_toggle_ch)
+        well_ch, tp_ch, well_toggle_ch, tp_toggle_ch,use_aligned_tiles_ch)
         seg_ch.view { it }
         seg_result = SEGMENTATION.out
     }
