@@ -69,7 +69,7 @@ process SEGMENTATION {
 
 
 process NORMALIZATION {
-    containerOptions "--mount type=bind,src=/gladstone/finkbeiner/,target=/gladstone/finkbeiner/"
+
     input:
     val ready
     val exp
@@ -84,8 +84,13 @@ process NORMALIZATION {
     output:
     val true
 
+
     script:
     """
+    echo "Activating Conda environment inside Singularity container..."
+    source /opt/conda/bin/activate datastudy
+    echo "Activated Conda environment inside Singularity container..."
+    pip install numpy
     normalization.py --experiment ${exp} --img_norm_name ${img_norm_name} --chosen_wells ${chosen_wells} --chosen_channels ${chosen_channels} --chosen_timepoints ${chosen_timepoints} \
     --wells_toggle ${wells_toggle} --channels_toggle ${channels_toggle} --timepoints_toggle ${timepoints_toggle} 
     """
@@ -173,6 +178,11 @@ process TRACKING {
 
     script:
     """
+    echo "Activating Conda environment inside Singularity container..."
+    source /opt/conda/bin/activate datastudy
+    echo "Activated Conda environment inside Singularity container..."
+    conda install -c conda-forge pyomo
+
     tracking.py --experiment ${exp} --distance_threshold ${distance_threshold} --VORONOI_BOOL ${voronoi_bool} \
     --chosen_channels ${morphology_channel} \
     --chosen_wells ${chosen_wells} --chosen_timepoints ${chosen_timepoints} \

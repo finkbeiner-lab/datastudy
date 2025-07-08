@@ -24,7 +24,7 @@
 // // SELECT MODULES
 // params.DO_UPDATEPATHS = false
 // params.DO_REGISTER_EXPERIMENT = false
-// params.DO_SEGMENTATION = false
+// params.DO_SEGMENTATION = true
 // params.DO_CELLPOSE_SEGMENTATION = false
 // params.DO_PUNCTA_SEGMENTATION = false
 // params.DO_TRACKING = false
@@ -38,8 +38,11 @@
 // // Variables per module
 
 // // REGISTER_EXPERIMENT
-// params.input_path = '/gladstone/finkbeiner/robodata/IXM4Galaxy/ChristinaB/CB-ICC-110223'  // path to raw images
-// params.output_path = '/gladstone/finkbeiner/elia/Christina/Imaging_Experiments/ICC/GXYTMP-NEW-CB-ICC110223'  // analysis directory
+
+// REGISTER_EXPERIMENT
+params.input_path =  '/gladstone/finkbeiner/robodata/IXM4Galaxy/ChristinaB/CB-ICC-110223'  // path to raw images
+params.output_path = '/gladstone/finkbeiner/elia/Christina/Imaging_Experiments/ICC/GXYTMP-NEW-CB-ICC110223'  // analysis directory
+
 // params.template_path = '.'  // xlsx template
 // params.robo_file = '.'  // Legacy Template Path for Roboscopes (csv)
 // params.ixm_hts_file = '/gladstone/finkbeiner/robodata/ImagingTemplates/CB-ICC-110223.HTS'  // IXM HTS Template
