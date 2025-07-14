@@ -132,6 +132,7 @@ upper_ch = Channel.of(params.upper_area_thresh)
 sd_ch = Channel.of(params.sd_scale_factor)
 well_ch = Channel.of(params.chosen_wells)
 tile_ch = Channel.of(params.tile)
+use_aligned_tiles_ch = Channel.of(params.use_aligned_tiles)
 tp_ch = Channel.of(params.chosen_timepoints)
 channel_ch = Channel.of(params.chosen_channels)
 well_toggle_ch = Channel.of(params.wells_toggle)
@@ -158,8 +159,6 @@ well_size_for_platemontage_ch = Channel.of(params.well_size_for_platemontage)
 norm_intensity_ch = Channel.of(params.norm_intensity)
 shift_ch = Channel.of(params.shift)//KS edit for overlay
 contrast_ch = Channel.of(params.contrast)//KS edit for overlay
-
-
 aligntiletype_ch = Channel.of(params.aligntiletype)
 alignment_algoritm_ch = Channel.of(params.alignment_algorithm)
 dir_structure_ch = Channel.of(params.dir_structure)
@@ -286,7 +285,7 @@ workflow {
     if (params.DO_SEGMENTATION) {
         register_flag = updatepaths_result.mix(register_result).collect()
         seg_ch = SEGMENTATION(register_flag, experiment_ch, morphology_ch, seg_ch, norm_ch, lower_ch, upper_ch, sd_ch,
-        well_ch, tp_ch, well_toggle_ch, tp_toggle_ch)
+        well_ch, tp_ch, well_toggle_ch, tp_toggle_ch,use_aligned_tiles_ch)
         seg_ch.view { it }
         seg_result = SEGMENTATION.out
     }
