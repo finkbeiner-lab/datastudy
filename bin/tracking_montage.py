@@ -117,12 +117,20 @@ class MontageDBTracker:
         op = Ops(opt_inner)
         tiledata_df = op.get_tiledata_df()
 
-        df = (
-            tiledata_df
-            [tiledata_df['well'].isin(wells)]
-            [tiledata_df['alignedmontagemaskpath'].str.contains(channel_marker, na=False)]
-        )
+        if tiledata_df['alignedmontagemaskpath'].str.contains(channel_marker, na=False).any():
+            df = tiledata_df[
+                tiledata_df['well'].isin(wells) &
+                tiledata_df['alignedmontagemaskpath'].str.contains(channel_marker, na=False)
+            ]
+        elif tiledata_df['montagemaskpath'].str.contains("_MONTAGE_ENCODED", na=False).any():
+            df = tiledata_df[
+                tiledata_df['well'].isin(wells) &
+                tiledata_df['montagemaskpath'].str.contains("_MONTAGE_ENCODED", na=False)
+            ]
+        else:
+            raise ValueError("No montage path contains the required marker.")
 
+    
         df = df.groupby(['well', 'timepoint'], as_index=False).agg({'alignedmontagemaskpath': 'first'})
 
         results = {}
