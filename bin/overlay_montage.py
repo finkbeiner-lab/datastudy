@@ -36,8 +36,12 @@ class OverlayBatch:
         # Check if AlignedMontages exists and is non-empty
         if os.path.isdir(aligned_path) and os.listdir(aligned_path):
             self.montage_root = aligned_path
+            self.selected = True
+
         else:
             self.montage_root = montaged_path
+            self.selected = False
+        print("Overlay direcoty", self.montage_root)
 
         self.overlay_root = os.path.join(self.experiment_root, "Overlay_Montages")
 
@@ -69,8 +73,14 @@ class OverlayBatch:
                     continue
 
             for fname in os.listdir(well_path):
-                if "_MONTAGE_ALIGNED.tif" not in fname:
-                    continue
+
+                if self.selected:
+                    if "_MONTAGE_ALIGNED.tif" not in fname:
+                        continue
+                else:
+                    if "_MONTAGE.tif" not in fname:
+                        continue
+                    
 
                 # if self.opt.target_channel not in fname:
                 #     continue  # skip non-target channel images
