@@ -30,7 +30,15 @@ class OverlayBatch:
         self.experiment_root = result[0][0].rstrip('/')
         print(f"[INFO] Found experiment root: {self.experiment_root}")
 
-        self.montage_root = os.path.join(self.experiment_root, "AlignedMontages")
+        aligned_path = os.path.join(self.experiment_root, "AlignedMontages")
+        montaged_path = os.path.join(self.experiment_root, "MontagedImages")
+
+        # Check if AlignedMontages exists and is non-empty
+        if os.path.isdir(aligned_path) and os.listdir(aligned_path):
+            self.montage_root = aligned_path
+        else:
+            self.montage_root = montaged_path
+
         self.overlay_root = os.path.join(self.experiment_root, "Overlay_Montages")
 
         self.font = ImageFont.truetype('/usr/share/fonts/dejavu/DejaVuSansMono.ttf', 50)
