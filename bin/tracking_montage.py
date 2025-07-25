@@ -246,7 +246,9 @@ class MontageDBTracker:
                 cv2.imwrite(tracked_path, tracked_mask)
                 logger.info(f"Saved tracked mask: {tracked_path}")
                 channel_imgs = {}
-                #aligned_img_dir = f"/gladstone/finkbeiner/steve/WeiyiLiu/GXYTMP/{self.experiment}/AlignedMontages/{well}"
+                aligned_img_dir = f"/gladstone/finkbeiner/steve/WeiyiLiu/GXYTMP/{self.experiment}/AlignedMontages/{well}"
+                ##KS edit to match Galaxy
+                object_count = len(recs)
 
                 # Target channenl only for calculate the intensities, not tracking
 
@@ -300,33 +302,58 @@ class MontageDBTracker:
                     else:
                         aligned_path = aligned_path.replace('_MONTAGE_ENCODED.tif', '_MONTAGE.tif')
 
-                    
-                    #img_path = os.path.join(aligned_img_dir, aligned_path)
-                    img_path = aligned_path
+                    img_path = os.path.join(aligned_img_dir, aligned_path)
 
                     if os.path.exists(img_path):
                         channel_imgs[ch] = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
                     else:
                         logger.warning(f"[WARN] Missing aligned image for {ch} at: {img_path}")
 
+                    ## KS edit for Galaxy csv format
+                    for new_id, cell in recs:
+                        props = self.get_cell_props(mask, channel_imgs, cell.randomcellid_montage)
+                        if props is None:
+                            continue
+                        cx, cy, area, intensities = props
 
-
-                for new_id, cell in recs:
-                    props = self.get_cell_props(mask, channel_imgs, cell.randomcellid_montage)
-                    if props is None:
-                        continue
-                    cx, cy, area, intensities = props
-                    row = {
-                        'experiment': self.experiment,
-                        'well': well,
-                        'timepoint': tp,
-                        'tracked_id': new_id,
-                        'centroid_x': cx,
-                        'centroid_y': cy,
-                        'area': area
-                    }
-                    row.update({f"intensity_mean_{k}": v for k, v in intensities.items()})
-                    out_records.append(row)
+                        for ch, mean_val in intensities.items():
+                            row = {
+                                'experiment': self.experiment,
+                                'ObjectCount': object_count,
+                                'well': well,
+                                'ObjectLabelsFound': new_id,
+                                'tracked_id': new_id,
+                                'MeasurementTag': ch,
+                                'BlobArea': area,
+                                'BlobCentroidX': cx,
+                                'centroid_x': cx,
+                                'BlobCentroidY': cy,
+                                'centroid_y': cy,
+                                'PixelIntensityMean': mean_val,
+                                'Sci_WellID': well,
+                                'Timepoint': tp,
+                                'timepoint': tp,
+                                'area': area
+                            }
+                            out_records.append(row)
+                
+                #Original
+                # for new_id, cell in recs:
+                #     props = self.get_cell_props(mask, channel_imgs, cell.randomcellid_montage)
+                #     if props is None:
+                #         continue
+                #     cx, cy, area, intensities = props
+                #     row = {
+                #         'experiment': self.experiment,
+                #         'well': well,
+                #         'timepoint': tp,
+                #         'tracked_id': new_id,
+                #         'centroid_x': cx,
+                #         'centroid_y': cy,
+                #         'area': area
+                #     }
+                #     row.update({f"intensity_mean_{k}": v for k, v in intensities.items()})
+                #     out_records.append(row)
 
         out_df = pd.DataFrame(out_records)
         outfile = os.path.join(self.analysisdir, f"{self.experiment}_tracked_montage_summary.csv")
